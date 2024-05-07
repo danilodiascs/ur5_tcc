@@ -1,0 +1,14 @@
+# ROS Workspace
+
+.catkin_workspace
+
+**/build
+**/devel
+
+# Visual Studio Code
+
+**/.vscode
+
+# Cache do Python
+
+**/__pycache__ 
