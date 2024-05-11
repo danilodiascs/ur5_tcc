@@ -2,10 +2,12 @@
 
 <launch>
 
-    <include file="$(find ur_gazebo)/launch/ur5_bringup.launch"/>
+    <include file="$(find ur_gazebo)/launch/ur5_bringup.launch">
+    	<arg name="paused" value="true" doc="Starts Gazebo in paused mode" />
+    </include>
+    
     <include file="$(find ur5_moveit_config)/launch/moveit_planning_execution.launch">
         <arg name="sim" value="true" />
     </include>
-    <!-- <include file="$(find ur5_moveit_config)/launch/moveit_rviz.launch"/> -->
 
 </launch>
