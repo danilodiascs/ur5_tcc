@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # ========================================================== #
-#                     aux_functions.py                       # 
+#                   auxiliary_functions.py                   # 
 # ========================================================== #
 # Projeto desenvolvido por Danilo Dias Conceição da Silva    #
 # como parte do Trabalho de Conclusão de Curso (TCC) do      #
@@ -45,7 +45,7 @@ def plan_and_execute():
     
     # Define a numeração do primeiro planejador que será utilizado pelo Moveit
     plan_number = 1
-    while (plan_number <= 1) and not rospy.is_shutdown():
+    while (plan_number <= 5) and not rospy.is_shutdown():
 
         # Define o algoritmo de planejamento a ser utilizado,
         # de acordo com uma ordem estabelecida no projeto
@@ -54,10 +54,10 @@ def plan_and_execute():
         # Criação do bag atual utilizando o nome do Algoritmo de planejamento
         # definido na função 'set_planner()'
         bag_name = f"Algoritmo_{ur5_motion_planning.move_group.get_planner_id()}.bag"
-        # bag = rosbag.Bag(bag_name, 'w')
+        bag = rosbag.Bag(bag_name, 'w')
         
         # Informa que o arquivo .bag está aberto e pronto para gravação
-        # bag_closed = False 
+        bag_closed = False 
         
         # Define a numeração da primeira posição alvo para o robô
         position_number = 1 
@@ -79,22 +79,18 @@ def plan_and_execute():
 
             # Grava num arquivo CSV os dados resultantes do Planejamento de movimento 
             # e da Execução do robô
-            # print_results_csv(ur5_motion_planning)
+            print_results_csv(ur5_motion_planning)
 
             # Define um intervalo de tempo de 2 segundos entre cada 
             # planejamento e execucão de movimentos do robô
             rospy.sleep(2)
 
-            # input("\nAperte ENTER para continuar...")
-            
             # Incrementa o contador do loop que alterna as posições do robô
             position_number += 1
         
         bag_closed = True # Informa que o arquivo .bag será fechado e encerra a gravação
-        # bag.close() # Fecha o arquivo .bag
+        bag.close() # Fecha o arquivo .bag
         
-        #input("\nAperte ENTER para continuar...")
-
         # Incrementa o contador do loop que alterna os planejadores
         plan_number+=1
     
@@ -119,7 +115,7 @@ def print_information(motion_planning: MoveGroupPythonInterface):
 
     # Armazena informações sobre os joints do robô
     named_targets = motion_planning.move_group.get_named_targets()
-    named_target_values = motion_planning.move_group.get_named_target_values("up")
+    named_target_values = motion_planning.move_group.get_named_target_values("home")
     remembered_joint_values = motion_planning.move_group.get_remembered_joint_values()
 
     # Armazena informações sobre os planejadores
@@ -137,7 +133,7 @@ def print_information(motion_planning: MoveGroupPythonInterface):
     # Imprime informações sobre os joints do robô no terminal
     print(f"Targets Nomeados: {named_targets}")
     print(f"Valores do Target Nomeado: {named_target_values}")
-    print(f"Remember: {remembered_joint_values}")
+    print(f"Grupo de joints armazenados: {remembered_joint_values}")
 
     # Imprime informações sobre a bibliioteca de planejamento
     # e os planejadores no terminal

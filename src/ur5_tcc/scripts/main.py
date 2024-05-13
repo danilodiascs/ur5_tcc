@@ -9,7 +9,7 @@
 # da Bahia (UFBA)                                            #
 # ========================================================== #
 
-from aux_functions import *
+from auxiliary_functions import *
 
 def main():
     try:
@@ -24,8 +24,6 @@ def main():
         # Chama a função que realiza todo o processo de Planejamento
         # e Execução de movimentos do robô
         plan_and_execute()
-
-        # rospy.on_shutdown(print_menu)
 
         # Envia um sinal de encerramento para o nó do ROS que está
         # em execução

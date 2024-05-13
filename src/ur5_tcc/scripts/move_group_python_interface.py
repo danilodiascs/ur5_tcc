@@ -9,125 +9,83 @@
 # da Bahia (UFBA)                                            #
 # ========================================================== #
 
-## INICIO_TUTORIAL imports
+## INICIO_DESCRIÇÃO imports
 ##
-## To use the Python MoveIt interfaces, we will import the `moveit_commander`_ namespace.
-## This namespace provides us with a `MoveGroupCommander`_ class, a `PlanningSceneInterface`_ class,
-## and a `RobotCommander`_ class. More on these below. We also import `rospy`_ and some messages that we will use:
-##
+## Para usar a interface Python para o MoveIt, é necessário importar o 
+## namespace 'moveit_commander'. Esse namespace nos permite utilizar as classes 
+## 'MoveGroupCommander', 'PlanningSceneInterface', e a classe 'RobotCommander'.
+## Outro import necessário é o namespace 'rospy', que é o cliente Python
+## para o ROS. Através dele é possível utilizar diversos comandos do ROS via Python
+## inclusive criar nós, publicar e inscrever em tópicos, entre outros.
 
-# Python 2/3 compatibility imports
 import sys
-import copy
 import rospy
 import moveit_commander
 import moveit_msgs.msg
-import geometry_msgs.msg
+from math import tau    # (2*pi) | 6.283185307179586 rad | 360°
 
-try:
-    from math import pi, tau, dist, fabs, cos
-except:  # For Python 2 compatibility
-    from math import pi, fabs, cos, sqrt
-
-    tau = 2.0 * pi
-
-    def dist(p, q):
-        return sqrt(sum((p_i - q_i) ** 2.0 for p_i, q_i in zip(p, q)))
-
-
-from std_msgs.msg import String
-from moveit_commander.conversions import pose_to_list
-
-## FIM_TUTORIAL
-
-
-def all_close(goal, actual, tolerance):
-    """
-    Convenience method for testing if the values in two lists are within a tolerance of each other.
-    For Pose and PoseStamped inputs, the angle between the two quaternions is compared (the angle
-    between the identical orientations q and -q is calculated correctly).
-    @param: goal       A list of floats, a Pose or a PoseStamped
-    @param: actual     A list of floats, a Pose or a PoseStamped
-    @param: tolerance  A float
-    @returns: bool
-    """
-    if type(goal) is list:
-        for index in range(len(goal)):
-            if abs(actual[index] - goal[index]) > tolerance:
-                return False
-
-    elif type(goal) is geometry_msgs.msg.PoseStamped:
-        return all_close(goal.pose, actual.pose, tolerance)
-
-    elif type(goal) is geometry_msgs.msg.Pose:
-        x0, y0, z0, qx0, qy0, qz0, qw0 = pose_to_list(actual)
-        x1, y1, z1, qx1, qy1, qz1, qw1 = pose_to_list(goal)
-        # Euclidean distance
-        d = dist((x1, y1, z1), (x0, y0, z0))
-        # phi = angle between orientations
-        cos_phi_half = fabs(qx0 * qx1 + qy0 * qy1 + qz0 * qz1 + qw0 * qw1)
-        return d <= tolerance and cos_phi_half >= cos(tolerance / 2.0)
-
-    return True
+## FIM_DESCRIÇÃO imports
 
 
 class MoveGroupPythonInterface(object):
-    """MoveGroupPythonInterface"""
 
     def __init__(self):
         super(MoveGroupPythonInterface, self).__init__()
 
-        ## INICIO_TUTORIAL setup
+        ## INICIO_DESCRIÇÃO setup
         ##
-        ## First initialize `moveit_commander`_ and a `rospy`_ node:
+        ## Inicialização do 'moveit_commander'
         moveit_commander.roscpp_initialize(sys.argv)
-        #rospy.init_node("move_group_python_interface", anonymous=True)
-
-        ## Instantiate a `RobotCommander`_ object. Provides information such as the robot's
-        ## kinematic model and the robot's current joint states
+        
+        ## Instancia um objeto 'RobotCommander'.
+        ## Fornece informações como o modelo cinemático
+        ## e os estados atuais dos joints do robô.
         robot = moveit_commander.RobotCommander()
 
-        ## Instantiate a `PlanningSceneInterface`_ object.  This provides a remote interface
-        ## for getting, setting, and updating the robot's internal understanding of the
-        ## surrounding world:
+        ## Instancia um objeto 'PlanningSceneInterface'.
+        ## Fornece uma interface remota para obter, configurar,
+        ## e atualizar o entendimento interno do robô sobre o 
+        ## mundo ao seu redor
         scene = moveit_commander.PlanningSceneInterface()
 
-        ## Instantiate a `MoveGroupCommander`_ object.  This object is an interface
-        ## to a planning group (group of joints).  In this tutorial the group is the primary
-        ## arm joints in the Panda robot, so we set the group's name to "panda_arm".
-        ## If you are using a different robot, change this value to the name of your robot
-        ## arm planning group.
-        ## This interface can be used to plan and execute motions:
+        ## Instancia um objeto 'MoveGroupCommander'.
+        ## Esse objeto é uma interface para um grupo de planejamento (grupo de joints).
+        ## Neste projeto, o grupo utilizado são os principais joints do braço no robô UR5,
+        ## cujo nome está definido como 'manipulator'.
+        ## Esta interface é utilizada para planejar e executar movimentos.
         group_name = "manipulator"
         move_group = moveit_commander.MoveGroupCommander(group_name)
  
-        ## Create a `DisplayTrajectory`_ ROS publisher which is used to display
-        ## trajectories in Rviz:
+        ## Cria um publisher do ROS para publicar mensagens do tipo
+        ## 'DisplayTrajectory', que é usado para mostrar a trajetória
+        ## do robô no Rviz.
         display_trajectory_publisher = rospy.Publisher(
             "/move_group/display_planned_path",
             moveit_msgs.msg.DisplayTrajectory,
             queue_size=20,
         )
-
-        ## FIM_TUTORIAL
-
-        ## INICIO_TUTORIAL basic_info
         ##
-        ## Conseguindo Informações Básicas
-        ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ## FIM_DESCRIÇÃO setup
+
+
+        ## INICIO_DESCRIÇÃO basic_info
+        ##
+        ## Obtendo Informações Básicas
+        ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^
         
-        # We can get the name of the reference frame for this robot:
+        ## Obter o nome do frame de referência para o robô:
         planning_frame = move_group.get_planning_frame()
         
-        # We can also print the name of the end-effector link for this group:
+        ## Obter o nome do end-effector link do robô:
         eef_link = move_group.get_end_effector_link()
         
-        # We can get a list of all the groups in the robot:
+        ## Obter uma lista de todos os grupos de links no robot:
         group_names = robot.get_group_names()
-        
-        ## FIM_TUTORIAL
+        ##
+        ## FIM_DESCRIÇÃO basic_info
 
-        # Variáveis diversas
+
+        # Atributos diversos
         self.robot = robot
         self.scene = scene
         self.move_group = move_group
@@ -140,13 +98,25 @@ class MoveGroupPythonInterface(object):
         self.planning_time = 0
         self.execution_time = 0
         self.trajectory_message = ""
-        self.position_name = "" 
+        self.position_name = ""
 
 
     ##### CONFIGURAÇÃO DOS JOINTS #####
 
     def config_joints(self):
 
+        ## INICIO_DESCRIÇÃO config_joints
+        ##
+        ## Configurando os joints do robô
+        ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ## Esta função configura os valores do joints para cada posição do robô
+        ## que será utilizada posteriormente no seu planejamento de movimentos.
+        ## Os valores iniciais dos joints são obtidos através da função
+        ## 'get_current_joint_values()' e alterados para definir a posição desejada.
+        ## A constante 'tau = 2*pi' está sendo utilizada como referêcia para
+        ## calcular os valores dos joints de cada posição alvo do planejamento.
+
+        ## Configurando os valores dos joints da posição 'goal0'
         joint_goal0 = self.move_group.get_current_joint_values()
         joint_goal0[0] =  tau / 4   # shoulder_pan_joint
         joint_goal0[1] = -tau / 4   # shoulder_lift_joint
@@ -155,6 +125,7 @@ class MoveGroupPythonInterface(object):
         joint_goal0[4] = 0          # wrist_2_joint
         joint_goal0[5] = 0          # wrist_3_joint
         
+        ## Configurando os valores dos joints da posição 'goal1'
         joint_goal1 = self.move_group.get_current_joint_values()
         joint_goal1[0] = 0          # shoulder_pan_joint
         joint_goal1[1] = -tau / 8   # shoulder_lift_joint
@@ -163,6 +134,7 @@ class MoveGroupPythonInterface(object):
         joint_goal1[4] = 0          # wrist_2_joint           
         joint_goal1[5] = 0          # wrist_3_joint
 
+        ## Configurando os valores dos joints da posição 'goal2'
         joint_goal2 = self.move_group.get_current_joint_values()
         joint_goal2[0] = 0          # shoulder_pan_joint
         joint_goal2[1] = -tau / 4   # shoulder_lift_joint
@@ -171,6 +143,7 @@ class MoveGroupPythonInterface(object):
         joint_goal2[4] = 0          # wrist_2_joint
         joint_goal2[5] = 0          # wrist_3_joint
 
+        ## Configurando os valores dos joints da posição 'goal3'
         joint_goal3 = self.move_group.get_current_joint_values()
         joint_goal3[0] = 0          # shoulder_pan_joint
         joint_goal3[1] = -tau / 8   # shoulder_lift_joint
@@ -179,13 +152,30 @@ class MoveGroupPythonInterface(object):
         joint_goal3[4] = 0          # wrist_2_joint
         joint_goal3[5] = 0          # wrist_3_joint
         
+        ## Após definir os valores dos joints de cada posição, eles serão
+        ## armazenados e associados a um nome, através do uso da função
+        ## 'remember_joint_values'. A função 'set_position()' utilizará estes
+        ## valores posteriormente através dos nomes atribuidos aos grupos de
+        ## joints. 
         self.move_group.remember_joint_values("goal0", joint_goal0)
         self.move_group.remember_joint_values("goal1", joint_goal1)
         self.move_group.remember_joint_values("goal2", joint_goal2)
         self.move_group.remember_joint_values("goal3", joint_goal3)
+        ##
+        ## FIM_DESCRIÇÃO config_joints
          
     def set_position(self, position_number):
 
+        ## INICIO_DESCRIÇÃO set_position
+        ##
+        ## Definindo as posições alvo
+        ## ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ## Esta função define as posições alvo para o planejamento  
+        ## de movimentos do robô de acordo com uma ordem estabelecida
+        ## no projeto. Para cada planejamento, a ordem é checada e uma
+        ## posição é definida através da função 'set_named_target()',
+        ## que utiliza os nomes do grupos de joints armazenados após a 
+        ## chamada da função 'config_joints()'.
         if (position_number == 1):
             self.position_name = "goal0"
             self.move_group.set_named_target(self.position_name)
@@ -201,12 +191,25 @@ class MoveGroupPythonInterface(object):
         elif (position_number == 5):
             self.position_name = "home"
             self.move_group.set_named_target(self.position_name)
+        ## OBS: A posição 'home' está previamente definida nos
+        ##      arquivos de configuração do robô UR5.    
+        ##
+        ## FIM_DESCRIÇÃO set_position
 
 
     ##### PLANEJAMENTO E EXECUÇÃO #####
 
     def set_planner(self, plan_number):
         
+        ## INICIO_DESCRIÇÃO set_planner
+        ##
+        ## Definindo os planejadores
+        ## ^^^^^^^^^^^^^^^^^^^^^^^^^
+        ## Esta função determina qual será o planejador utilizado
+        ## no planejamento de movimentos de acordo com uma ordem
+        ## estabelecida no projeto. Para cada mudança de planejador,
+        ## a ordem é checada e um planejador é definido através da função
+        ## 'set_planner_id()' passando como argumento o nome do planejador.
         if (plan_number == 1):
             self.move_group.set_planner_id("RRT")
         elif (plan_number == 2):
@@ -217,72 +220,83 @@ class MoveGroupPythonInterface(object):
             self.move_group.set_planner_id("RRTConnect")
         elif (plan_number == 5):
             self.move_group.set_planner_id("SPARS")
+        ##
+        ## FIM_DESCRIÇÃO set_planner
 
     def motion_planning(self):
 
-        ## INICIO_TUTORIAL motion_planning
+        ## INICIO_DESCRIÇÃO motion_planning
         ##
-        ## Planning to a Joint Goal
-        ## ^^^^^^^^^^^^^^^^^^^^^^^^
-        ## The Panda's zero configuration is at a `singularity <https://www.quora.com/Robotics-What-is-meant-by-kinematic-singularity>`_, so the first
-        ## thing we want to do is move it to a slightly better configuration.
-        ## We use the constant `tau = 2*pi <https://en.wikipedia.org/wiki/Turn_(angle)#Tau_proposals>`_ for convenience:
-        # We get the joint values from the group and change some of the values:
+        ## Planejando a trajetória do robô
+        ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ## Após configurar os joints e definir o planejador que será utilizado, 
+        ## o planejamento de movimentos do robô poderá ser realizado. Este
+        ## planejamento é feito através da chamada da função 'plan()', que utiliza
+        ## os valores dos joints definidos na função 'set_position()' para conhecer 
+        ## a trajetória de deslocamento do robô que será planejada.         
         
-        # Após realizar o planejamento de movimento do robô, a função ''plan()''
-        # retorna uma tupla, que contém informações como: confirmação de sucesso,
-        # a trajetória que o robô deve realizar, o tempo de planejamento e um
-        # código de erro, caso exista.
+        ## Após realizar o planejamento de movimentos do robô, a função 'plan()'
+        ## retorna uma tupla, que contém informações como: confirmação de sucesso,
+        ## a trajetória que o robô deve realizar, o tempo de planejamento e um
+        ## código de erro, caso exista.
         (success_flag,
          trajectory_message,
          planning_time,
          error_code) = self.move_group.plan()
-                
+
+        ## Armazena no atributo desta classe o tempo de planejamento
         self.planning_time = planning_time
+
+        ## Armazena no atributo desta classe a trajetória a ser realizada pelo robô
         self.trajectory_message = trajectory_message 
-
-        ## FIM_TUTORIAL
-
-        # For testing:
-        # current_joints = self.move_group.get_current_joint_values()
-        # return all_close(joints, current_joints, 0.01)
+        ##
+        ## FIM_DESCRIÇÃO motion_planning
 
     def execute_plan(self):
 
-        ## INICIO_TUTORIAL execute_plan
+        ## INICIO_DESCRIÇÃO execute_plan
         ##
-        ## Executing a Plan
-        ## ^^^^^^^^^^^^^^^^
-        ## Use execute if you would like the robot to follow
-        ## the plan that has already been computed:
+        ## Executando um planejamento de movimentos
+        ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ## Esta função utiliza a trajetória do robô, estabelecida após
+        ## o planejamento de movimentos, para executar a sua movimentação.
+        ## Dentro desta função também é calculado o tempo decorrido
+        ## para realizar a execução do robô.
         
-        tempo_inicial = rospy.get_time()
+        ## Obtém o tempo do inicio da execução de movimentos do robô
+        initial_time = rospy.get_time()
         
+        ## Realiza a execução do robô utilizando a trajetória armazenada no
+        ## atributo 'trajectory_message' desta classe após o planejamento de
+        ## movimentos.
         self.move_group.execute(self.trajectory_message, wait=True)
         
-        # Chamar a função ''stop()'' garante que não há nenhum movimento residual
+        ## Chamar a função 'stop()' garante que não há nenhum movimento residual
         self.move_group.stop()
 
-        tempo_final = rospy.get_time()
+        ## Obtém o tempo ao final da execução de movimentos do robô
+        final_time = rospy.get_time()
        
-        tempo_execucao = tempo_final - tempo_inicial
-
-        self.execution_time = tempo_execucao
-
-        ## **Note:** The robot's current joint state must be within some tolerance of the
-        ## first waypoint in the `RobotTrajectory`_ or ``execute()`` will fail
-        
-        ## FIM_TUTORIAL
+        ## Calcula o tempo de execução do robô e armazena o valor no
+        ## atributo desta classe.
+        self.execution_time = final_time - initial_time
+        ##
+        ## FIM_DESCRIÇÃO execute_plan
     
 
     ##### VISUALIZAÇÃO DO PLANEJAMENTO NO RVIZ #####
 
     def display_trajectory(self, plan):
-        robot = self.robot
-        display_trajectory_publisher = self.display_trajectory_publisher
-
+        
+        ## Define o tipo de mensagem que será publicada
         display_trajectory = moveit_msgs.msg.DisplayTrajectory()
-        display_trajectory.trajectory_start = robot.get_current_state()
+
+        ## Obtém o estado atual do robô e define o inicio da trajetória dele.
+        display_trajectory.trajectory_start = self.robot.get_current_state()
+        
+        ## Define o planejamento que será mostrado no Rviz
         display_trajectory.trajectory.append(plan)
-        # Publish
-        display_trajectory_publisher.publish(display_trajectory)
+                
+        ## Publica a mensagem no tópico '/move_group/display_planned_path'
+        ## e mostra o planejamento no Rviz.
+        self.display_trajectory_publisher.publish(display_trajectory)

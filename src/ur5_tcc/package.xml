@@ -14,8 +14,8 @@
   
   <license>BSD</license>
 
-  <url type="website">http://wiki.ros.org/universal_robots</url>
-  <url type="repository">https://github.com/ros-industrial/universal_robot</url>
+  <url type="website">https://wiki.ros.org</url>
+  <url type="repository">https://github.com/danilodiascs/ur5_tcc</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
