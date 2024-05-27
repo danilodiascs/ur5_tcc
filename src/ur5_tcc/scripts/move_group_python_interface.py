@@ -211,13 +211,13 @@ class MoveGroupPythonInterface(object):
         ## a ordem é checada e um planejador é definido através da função
         ## 'set_planner_id()' passando como argumento o nome do planejador.
         if (plan_number == 1):
-            self.move_group.set_planner_id("RRT")
+            self.move_group.set_planner_id("BFMT")
         elif (plan_number == 2):
-            self.move_group.set_planner_id("PRM")
+            self.move_group.set_planner_id("FMT")
         elif (plan_number == 3):
-            self.move_group.set_planner_id("TRRT")
+            self.move_group.set_planner_id("PRM")
         elif (plan_number == 4):
-            self.move_group.set_planner_id("RRTConnect")
+            self.move_group.set_planner_id("RRT")
         elif (plan_number == 5):
             self.move_group.set_planner_id("SPARS")
         ##
