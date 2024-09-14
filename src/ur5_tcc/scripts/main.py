@@ -17,7 +17,7 @@ def main():
         rospy.init_node('move_group_python_interface', anonymous=False)
 
         # Inscreve o nó em execução no tópico 'joint_states'
-        # visando capturar os dados de Posição, Velocidade e Aceleração
+        # visando capturar os dados de Posição, Velocidade e Força
         # dos joints do robô e gravá-los num arquivo .bag 
         rospy.Subscriber("/joint_states", JointState, callbackSubscriber)
 
