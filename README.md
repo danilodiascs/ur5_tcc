@@ -1,8 +1,9 @@
 # Estudo comparativo entre estratégias de planejamento de trajetórias para manipuladores robóticos
 
-[![Manutenção?](https://img.shields.io/badge/Manutenção%3f-Sim-darkgreen.svg)](https://shields.io/)
-[![Mantenedor](https://img.shields.io/badge/Mantenedor-Danilo_Dias-darkblue.svg)](https://shields.io/)
+![Manutenção?](https://img.shields.io/badge/Manutenção%3f-Sim-darkgreen.svg)
+![Mantenedor](https://img.shields.io/badge/Mantenedor-Danilo_Dias-darkblue.svg)
 <!-- ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) -->
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 ![ROS](https://img.shields.io/badge/ros-%230A0FF9.svg?style=for-the-badge&logo=ros&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)
@@ -11,7 +12,20 @@
 
 ## Descrição
 
->Repositório do Trabalho de Conclusão de Curso (TCC) de Danilo Dias Conceição da Silva para o curso de Engenharia da Computação da Universidade Federal da Bahia (UFBA)
+>Repositório do **Trabalho de Conclusão de Curso (TCC)** de **Danilo Dias Conceição da Silva** para o curso de **Engenharia da Computação** da **Universidade Federal da Bahia (UFBA)**
+
+### Objetivo
+
+>Realizar um estudo comparativo entre diferentes técnicas implementadas em algoritmos de planejamento de
+trajetórias para manipuladores robóticos.
+
+Para isso, foram utilizados os seguintes recursos:
+
+* O *framework* ***Robot Operating System*** **(ROS)**
+* A ferramenta **MoveIt**
+* A biblioteca de planejamento de trajetórias **OMPL**
+* O manipulador robótico **UR5**
+* O simulador **Gazebo**.
 
 ## Instruções de instalação
 
