@@ -34,7 +34,7 @@ git clone https://github.com/danilodiascs/ur5_tcc.git
 
 2. Após isto, entre na pasta do projeto:
 ```bash
-cd ws_ur5tcc
+cd ur5_tcc
 ```
 
 3. Compile o projeto:
